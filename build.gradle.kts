@@ -3,6 +3,8 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.5.31"
 
     java
+
+    `maven-publish`
 }
 group = "net.minestom"
 version = "1.0.0"
