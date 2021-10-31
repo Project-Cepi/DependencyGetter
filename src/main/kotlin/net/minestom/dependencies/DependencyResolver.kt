@@ -1,6 +1,5 @@
 package net.minestom.dependencies
 
-import java.net.URL
 import java.nio.file.Path
 import kotlin.jvm.Throws
 
@@ -16,4 +15,17 @@ interface DependencyResolver {
      */
     @Throws(UnresolvedDependencyException::class)
     fun resolve(id: String, targetFolder: Path): ResolvedDependency
+
+    /**
+     * Resolve and download a dependency to local storage.
+     * Allowed to avoid redownload if there is a local version cached.
+     *
+     * @return ResolvedDependency if found, null if not
+     */
+    fun resolveOrNull(id: String, targetFolder: Path): ResolvedDependency? = try {
+        resolve(id, targetFolder)
+    } catch (exception: UnresolvedDependencyException) {
+        null
+    }
+
 }

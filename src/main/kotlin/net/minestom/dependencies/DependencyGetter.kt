@@ -9,23 +9,25 @@ class DependencyGetter {
 
     private val resolverList = mutableListOf<DependencyResolver>()
 
-    fun addResolver(resolver: DependencyResolver)
-        = apply { resolverList += resolver }
+    fun addResolver(resolver: DependencyResolver) = apply { resolverList += resolver }
+    fun addResolvers(vararg resolvers: DependencyResolver) = apply { resolverList.addAll(resolvers) }
 
     /**
      * Shorthand to add a MavenResolver with the given repositories
+     *
+     * @param repositories The repositories to add
      */
     fun addMavenResolver(repositories: List<MavenRepository>) = addResolver(MavenResolver(repositories))
 
-    fun get(id: String, targetFolder: Path): ResolvedDependency {
-        resolverList.forEach { resolver ->
-            try {
-                return resolver.resolve(id, targetFolder)
-            } catch (e: UnresolvedDependencyException) {
-                // silence and go to next resolver
-            }
-        }
+    /**
+     * Shorthand to add a MavenResolver with the given repositories
+     *
+     * @param repositories The repositories to add
+     */
+    fun addMavenResolver(vararg repositories: MavenRepository) = addMavenResolver(repositories.toList())
 
-        throw UnresolvedDependencyException("Could not find $id inside resolver list: ${resolverList.joinToString { it.toString() }}")
-    }
+    fun get(id: String, targetFolder: Path): ResolvedDependency =
+        resolverList.firstNotNullOfOrNull { it.resolveOrNull(id, targetFolder) }
+            ?: throw UnresolvedDependencyException("Could not find $id inside resolver list: ${resolverList.joinToString { it.toString() }}")
+
 }

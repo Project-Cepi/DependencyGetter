@@ -28,11 +28,7 @@ class MavenRepository(val name: String, url: String) {
         return true
     }
 
-    override fun hashCode(): Int {
-        return url.hashCode()
-    }
+    override fun hashCode() = url.hashCode()
 
-    override fun toString(): String {
-        return url.toExternalForm()
-    }
+    override fun toString(): String = url.toExternalForm()
 }

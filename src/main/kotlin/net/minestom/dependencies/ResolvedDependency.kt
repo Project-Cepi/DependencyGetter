@@ -1,5 +1,6 @@
 package net.minestom.dependencies
 
+import java.io.PrintStream
 import java.net.URL
 
 /**
@@ -12,8 +13,8 @@ data class ResolvedDependency(
     val group: String, val name: String, val version: String,
     val contentsLocation: URL, val subdependencies: List<ResolvedDependency>
 ) {
-    fun printTree(indent: String = "") {
-        println("$indent- $group:$name:$version ($contentsLocation)")
+    fun printTree(indent: String = "", out: PrintStream = System.out) {
+        out.println("$indent- $group:$name:$version ($contentsLocation)")
         subdependencies.forEach { it.printTree("$indent  ") }
     }
 }

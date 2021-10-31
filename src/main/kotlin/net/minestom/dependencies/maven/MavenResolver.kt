@@ -16,10 +16,11 @@ import java.nio.file.Path
  *
  * Creates a temporary folder `.tmp` inside the target folder to store a Maven `settings.xml` file to specify
  * a local repository and remote repositories.
- *
- * @param repositories list of repositories to use to resolve artifacts
  */
-class MavenResolver(val repositories: List<MavenRepository>): DependencyResolver {
+class MavenResolver(
+    /** A list of repositories to use to resolve artifacts */
+    val repositories: List<MavenRepository>
+): DependencyResolver {
 
     /**
      * Resolves and downloads maven artifacts related to the given id.
@@ -57,8 +58,9 @@ class MavenResolver(val repositories: List<MavenRepository>): DependencyResolver
                 </settings>
             """.trimIndent())
             // ShrinkWrap Resolver either always uses Central, or never, even if it is in the remote repositories
-            val hasMavenCentral = repositories.any { it.url.sameFile(MavenRepository.Central.url) }
-            val resolver = Maven.configureResolver().withMavenCentralRepo(hasMavenCentral).fromFile(settingsFile.toFile())
+            val resolver = Maven.configureResolver()
+                .withMavenCentralRepo(repositories.any { it.url.sameFile(MavenRepository.Central.url) })
+                .fromFile(settingsFile.toFile())
             val artifacts = resolver.resolve(id).withTransitivity().asResolvedArtifact()
             val dependencies = artifacts.drop(1).map(::convertToDependency)
             val coords = artifacts[0].coordinate
